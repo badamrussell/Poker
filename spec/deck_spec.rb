@@ -2,21 +2,23 @@ require 'rspec'
 require 'deck'
 
 describe Deck do
-  let(:deck) { Deck.new }
+
+  let(:deck_obj) { Deck.new }
 
   it "has 52 cards" do
-    deck.size.should be(52)
+    deck_obj.size.should be(52)
   end
 
   it "can have cards removed" do
-    deck.draw
-    deck.size.should be(51)
+    card = deck_obj.draw
+    deck_obj.size.should be(51)
+    deck_obj.deck.include?(card).should be_false
   end
 
   it "can put cards back" do
-    card = deck.draw
-    deck.replace([card])
-    deck.size.should be(52)
+    card = deck_obj.draw
+    deck_obj.replace([card])
+    deck_obj.size.should be(52)
+    deck_obj.deck.include?(card).should be_true
   end
-
 end

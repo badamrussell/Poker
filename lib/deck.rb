@@ -1,9 +1,11 @@
 require_relative "card"
 
 class Deck
+  attr_reader :deck
 
   def initialize()
     @deck = set
+    shuffle
   end
 
   def set
@@ -14,6 +16,10 @@ class Deck
         end
       end
     end
+  end
+
+  def shuffle
+    @deck.shuffle!
   end
 
   def size
