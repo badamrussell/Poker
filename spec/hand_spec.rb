@@ -1,15 +1,23 @@
+# -*- coding: utf-8 -*-
 require 'rspec'
 require 'hand'
 
 describe Hand do
-  let(:hand_obj) { Hand.new }
+  let(:cards) { [double("card1", :suit => "♠", :val => "10"),
+                 double("card2", :suit => "♠", :val => "J"),
+                 double("card3", :suit => "♠", :val => "K"),
+                 double("card4", :suit => "♠", :val => "A"),
+                 double("card5", :suit => "♠", :val => "Q")] }
 
-  it "exists" do
+  subject(:hand_obj) { Hand.new(cards) }
 
-  end
+  its(:is_a?) { Hand }
 
-  it "has 5 cards" do
+  its(:size) { should eq 5 }
 
-  end
+  its(:pattern) { should eq :royal_flush }
+
 
 end
+
+
