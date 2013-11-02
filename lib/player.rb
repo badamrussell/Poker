@@ -39,9 +39,15 @@ class Player
 
 
     action_name = ui_action
-    new_bet =
 
-    while new_bet
+    return [:fold, 0, 0] if action_name == :fold
+
+    return [:call, bet_owed, 0] if action_name == :call && afford_bet?(bet_owed)
+
+
+    #new_bet =
+
+    #while new_bet
     action_name, call_amount, raise_amount = :fold, 0, 0
 
     #bet must be minumum of bet_owed

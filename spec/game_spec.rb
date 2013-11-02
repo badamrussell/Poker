@@ -84,7 +84,6 @@ describe Game do
       game.betting_round
       expect(game.pot).to eq(60)
     end
-
   end
 
   it "knows whose turn it is"

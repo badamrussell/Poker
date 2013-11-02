@@ -15,8 +15,17 @@ describe Player do
 
 
   context "player's turn" do
+
+
+    it "can fold" do
+      player.stub(:ui_action).and_return(:fold)
+
+      expect(player.bet_action(5)).to eq([:fold,0,0])
+    end
+
     it "can place bet (raise/call/ante)"
-    it "can fold"
+
+
     it "can check"
   end
 
