@@ -9,7 +9,7 @@ describe Hand do
                  double("card4", :suit => "♠", :val => "A"),
                  double("card5", :suit => "♠", :val => "Q")] }
 
-  subject(:hand_obj) { Hand.new(cards) }
+  subject(:hand) { Hand.new(cards) }
 
   its(:is_a?) { Hand }
 
@@ -17,7 +17,7 @@ describe Hand do
 
   its(:pattern) { should eq :royal_flush }
 
-
+  its(:hand_value) { should eq 100 }
 end
 
 

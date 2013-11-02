@@ -4,6 +4,19 @@ class Hand
 
   VALUES = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"].reverse
 
+=begin
+:r_flush    180
+:s_flush    160
+:four_kind  140
+:full_house 120
+:flush      100
+:straight   80
+:three_kind 80
+:two_pair   50  + high_values of both pairs
+:one_pair   20 + high_value of pair + 13
+:high_card  13
+=end
+
   SETS = [:r_flush, :s_flush, :four_kind, :full_house, :flush, :straight, :three_kind, :two_pair, :one_pair]
 
   attr_reader :cards
@@ -42,12 +55,20 @@ class Hand
     end
   end
 
-  def all_same_suit?(suit)
+  def flush?(suit)
     @cards.all? { |my_card| my_card.suit == suit }
+  end
+
+  def straight?
+    @cards.sort
   end
 
   def count(card)
     @cards.select { |my_card| my_card.val == card.val }.size
+  end
+
+  def flush()
+
   end
 
   def determine_hand
