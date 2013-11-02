@@ -34,8 +34,32 @@ class Hand
     SETS.index(determine_hand) < SETS.index(other_hand.determine_hand)
   end
 
-  def select_cards
+  def render
+    puts "\n"
+    str_hand = "  "
+    cards.each_with_index do |card, index|
+      str_hand += card.render + "  "
+    end
+    puts str_hand  + "  "+ determine_hand.to_s.upcase
+    puts "    1      2      3      4      5 "
+    puts "\n"
 
+  end
+
+  def select_cards
+    render
+    print "Type in the cards you want to discard or 's' to skip:  "
+    str_input = gets.downcase.chomp.split(",")
+
+    str_input = [] if str_input[0] == "s"
+
+    selected_cards = []
+    str_input.each do |num|
+      index = num.to_i - 1
+      selected_cards << cards[index]
+    end
+
+    selected_cards
   end
 
   def discard(discard_cards)

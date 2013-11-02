@@ -10,8 +10,8 @@ class Deck
 
   def set
     [].tap do |full_deck|
-      Card::SUIT_STRINGS.each do |suit|
-        Card::SYMBOL_STRINGS.each do |name, symbol|
+      Card.get_suits.each do |suit|
+        Card.get_symbols.each do |symbol|
           full_deck << Card.new(suit, symbol)
         end
       end

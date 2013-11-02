@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require 'colorize'
 
 class Card
 
@@ -25,6 +26,14 @@ class Card
     :ace   => "A"
   }
 
+  def self.get_symbols
+    SYMBOL_STRINGS.values
+  end
+
+  def self.get_suits
+    SUIT_STRINGS.values
+  end
+
   attr_reader :suit, :value, :symbol
 
   def initialize(suit = "♣", symbol = "A")
@@ -48,6 +57,14 @@ class Card
     return 1 if value > other_card.value
     return -1 if value < other_card.value
     0
+  end
+
+  def render
+    if self.suit == "♦" || self.suit == "♥"
+      "[#{self.symbol} #{self.suit}]".red
+    else
+      "[#{self.symbol} #{self.suit}]".black
+    end
   end
 
   protected

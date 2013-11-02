@@ -43,7 +43,7 @@ class Player
     print "How much would you like to raise? (max 10) >"
     new_bet = gets.chomp.to_i.abs
 
-    if user_input > pot || user_input > 10
+    if new_bet > pot || new_bet > 10
       puts "That bet is invalid"
       new_bet = 0
     end
