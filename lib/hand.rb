@@ -34,6 +34,10 @@ class Hand
     SETS.index(determine_hand) < SETS.index(other_hand.determine_hand)
   end
 
+  def select_cards
+
+  end
+
   def discard(discard_cards)
     raise "cannot discard that many cards" if discard_cards.size > size
     discard_cards.each do |card|
@@ -41,7 +45,7 @@ class Hand
     end
   end
 
-  def draw(number)
+  def draw(number, deck)
     @cards += deck.draw(number)
   end
 

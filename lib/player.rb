@@ -24,33 +24,52 @@ class Player
   end
 
   def ui_action
-    available_actions = [:fold, :raise, :call]
-    choice = 2
+    print "Fold, Raise or Call?  >"
+    user_input = gets.downcase.chomp
 
-
-    available_actions[choice]
+    case user_input[0]
+    when "f"
+      :fold
+    when "r"
+      :raise
+    when "c"
+      :call
+    else
+      ui_action
+    end
   end
 
   def ui_bet
-    20
+    print "How much would you like to raise? (max 10) >"
+    new_bet = gets.chomp.to_i.abs
+
+    if user_input > pot || user_input > 10
+      puts "That bet is invalid"
+      new_bet = 0
+    end
+
+    new_bet
   end
 
   def bet_action(bet_owed)
-
+    raise_amount = 0
+    call_amount = 0
 
     action_name = ui_action
+    raise_amount = ui_bet if action_name == :raise
 
-    return [:fold, 0, 0] if action_name == :fold
+    temp_pot = pot - bet_owed
 
-    return [:call, bet_owed, 0] if action_name == :call && afford_bet?(bet_owed)
+    while action_name == :raise
+      if raise_amount == 0 || raise_amount > temp_pot
+        action_name = ui_action
+        raise_amount = ui_bet if action_name == :raise
+      else
+        break
+      end
+    end
 
-
-    #new_bet =
-
-    #while new_bet
-    action_name, call_amount, raise_amount = :fold, 0, 0
-
-    #bet must be minumum of bet_owed
+    call_amount = bet_owed unless action_name == :fold
 
     [action_name, call_amount, raise_amount]
   end

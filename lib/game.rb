@@ -6,6 +6,7 @@ class Game
 
   def initialize
     @deck = Deck.new
+    @discard_pile = []
     @players = []
     @turn = 0
     @pot = 0
@@ -49,6 +50,8 @@ class Game
       players.each_with_index do |player, index|
         next if player.folded
 
+        puts "#{player.name} your turn!"
+
         action, call_amount, raise_amount = player.bet_action(bets[index])
 
         self.pot += player.bet(raise_amount+call_amount)
@@ -66,8 +69,6 @@ class Game
           end
         when :call
           bets[index] -= call_amount
-        when :check
-
         end
       end
 
@@ -88,6 +89,17 @@ class Game
 
   def draw_phase
     #each player may remove cards and replenish their hands
+    select_cards =
+
+    players.each do |player|
+      cards = player.hand.select_cards
+
+      if cards.size > 0
+        player.hand.discard(cards)
+        discard_pile += cards
+        player.hand.draw(deck, cards.size)
+      end
+    end
   end
 
   def showdown
