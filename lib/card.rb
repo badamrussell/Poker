@@ -9,7 +9,7 @@ class Card
     :spades   => "♠"
   }
 
-  VALUE_STRINGS = {
+  SYMBOL_STRINGS = {
     :deuce => "2",
     :three => "3",
     :four  => "4",
@@ -25,36 +25,36 @@ class Card
     :ace   => "A"
   }
 
-  attr_reader :suit, :value
+  attr_reader :suit, :value, :symbol
 
-  def initialize(suit = "♣", value = "A")
+  def initialize(suit = "♣", symbol = "A")
     @suit = suit
-    @value = value
-    @number_value = num_value
+    @symbol = symbol
+    @value = get_value
   end
 
 
   def <(other_card)
-    return false if number_value > other_card.number_value
-    return true if number_value < other_card.number_value
+    return false if value > other_card.value
+    return true if value < other_card.value
   end
 
   def >(other_card)
-    return true if number_value > other_card.number_value
-    return false if number_value < other_card.number_value
+    return true if value > other_card.value
+    return false if value < other_card.value
   end
 
   def <=>(other_card)
-    return 1 if number_value > other_card.number_value
-    return -1 if number_value < other_card.number_value
+    return 1 if value > other_card.value
+    return -1 if value < other_card.value
     0
   end
 
   protected
-  attr_reader :number_value
 
-  def num_value
-    case self.value
+
+  def get_value
+    case self.symbol
     when "A"
       14
     when "K"
@@ -64,7 +64,7 @@ class Card
     when "J"
       11
     else
-      self.value.to_i
+      self.symbol.to_i
     end
   end
 end

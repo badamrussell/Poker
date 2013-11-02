@@ -11,8 +11,8 @@ class Deck
   def set
     [].tap do |full_deck|
       Card::SUIT_STRINGS.each do |suit|
-        Card::VALUE_STRINGS.each do |value|
-          full_deck << Card.new(suit, value)
+        Card::SYMBOL_STRINGS.each do |name, symbol|
+          full_deck << Card.new(suit, symbol)
         end
       end
     end

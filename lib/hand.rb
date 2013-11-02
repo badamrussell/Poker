@@ -50,7 +50,7 @@ class Hand
   def num_kind
     {}.tap do |kinds|
       @cards.each do |card|
-        kinds[card.val] = count(card)
+        kinds[card.symbol] = count(card)
       end
     end
   end
@@ -59,16 +59,31 @@ class Hand
     @cards.all? { |my_card| my_card.suit == suit }
   end
 
+  def high_card
+    best_card = cards[0]
+    @cards.each do |card|
+      best_card = card if card.value > best_card.value
+    end
+    best_card
+  end
+
   def straight?
-    @cards.sort
+    diff = 0
+    @cards.sort!.reverse!
+    (0...(@cards.size - 1)).each do |index|
+      diff += (@cards[index].value - @cards[index+1].value).abs
+    end
+
+    diff == 4
   end
 
   def count(card)
-    @cards.select { |my_card| my_card.val == card.val }.size
+    @cards.select { |my_card| my_card.symbol == card.symbol }.size
   end
 
-  def flush()
-
+  def flush?
+    suit = @cards[0].suit
+    @cards.select { |my_card| my_card.suit == suit }.size == 5
   end
 
   def determine_hand

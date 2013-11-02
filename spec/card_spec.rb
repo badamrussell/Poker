@@ -13,7 +13,7 @@ describe Card do
 
   it "has a suit and value" do
     expect(card.suit).to eq("♣")
-    expect(card.value).to eq("2")
+    expect(card.symbol).to eq("2")
     # expect(card.suit == "♣" && ).to be_true
   end
 
