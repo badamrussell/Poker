@@ -79,9 +79,7 @@ class Hand
     # :four_kind, :three_kind, :two_pair, :one_pair
     # :full_house
 
-    , :straight,
 
-    SETS = [:r_flush, :s_flush, :four_kind, :full_house, :flush, :straight, :three_kind, :two_pair, :one_pair]
 
   end
 end

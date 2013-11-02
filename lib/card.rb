@@ -25,14 +25,24 @@ class Card
     :ace   => "A"
   }
 
-  attr_reader :suit, :val
+  attr_reader :suit, :value
 
   def initialize(suit = "♣", value = "A")
     @suit = suit
-    @val = value
+    @value = value
     @number_value = num_value
   end
 
+
+  def <(other_card)
+    return false if number_value > other_card.number_value
+    return true if number_value < other_card.number_value
+  end
+
+  def >(other_card)
+    return true if number_value > other_card.number_value
+    return false if number_value < other_card.number_value
+  end
 
   def <=>(other_card)
     return 1 if number_value > other_card.number_value
@@ -44,7 +54,7 @@ class Card
   attr_reader :number_value
 
   def num_value
-    case VALUE_STRINGS[other_card.value]
+    case self.value
     when "A"
       14
     when "K"
@@ -54,7 +64,7 @@ class Card
     when "J"
       11
     else
-      VALUE_STRINGS[other_card.value].to_i
+      self.value.to_i
     end
   end
 end
