@@ -95,12 +95,9 @@ describe Hand do
       expect(hand1.beats?(hand2)).to be_false
     end
 
-    it "handles ties" do
-
-    end
+    it "handles ties"
   end
 
-  its(:hand_value) { should eq 100 }
 end
 
 
