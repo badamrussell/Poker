@@ -22,6 +22,17 @@ class Game
 
   end
 
+  def start_round
+
+    #collect antes
+    players.each do |player|
+
+    end
+    # deal hands
+
+
+  end
+
   def betting_round
     #players may fold, call or raise, check
     # fold - give up
@@ -39,9 +50,12 @@ class Game
     #players compare hands and a winner is determined
   end
 
+
   def play
     #collects a pot from each player
     #deals a hand to each player
+
+    start_round
 
     betting_round
 
