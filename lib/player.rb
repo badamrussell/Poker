@@ -23,7 +23,7 @@ class Player
     bet_amount
   end
 
-  def action(bet_owed)
+  def bet_action(bet_owed)
     available_actions = [:fold, :raise]
     if bet_owed == 0
       available_actions << :check

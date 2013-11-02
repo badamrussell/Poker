@@ -6,25 +6,24 @@ describe Game do
   subject(:game) { Game.new }
   #let(:player1) { double("player1", name: "Adam", pot: 100) }
   #let(:player2) { double("player2", name: "Hank", pot: 200) }
-  let(:player1) { Player.new("Adam", 100) }
-  let(:player2) { Player.new("Hank", 200) }
-  let(:player3) { Player.new("Bill", 4) }
+  let(:player1) { Player.new("Ryan", 100) }
+  let(:player2) { Player.new("Christi", 200) }
+  let(:player3) { Player.new("Ed", 4) }
 
   its(:deck) { should be_a(Deck) }
 
-  before(:each) do
-    game.add_player(player1)
-    game.add_player(player2)
-    game.add_player(player3)
-    player3.folded = true
-  end
-
-  it "has players" do
-    expect(game.players.count).to eq(3)
-  end
-
   describe "#start_round" do
-    before(:each) { game.start_round }
+    before(:each) do
+      game.add_player(player1)
+      game.add_player(player2)
+      game.add_player(player3)
+
+      game.start_round
+    end
+
+    it "has players" do
+      expect(game.players.count).to eq(3)
+    end
 
     it "all players ante up" do
       expect(player1.pot).to eq(95)
@@ -39,15 +38,45 @@ describe Game do
     it "antes added to pot" do
       expect(game.pot).to eq(10)
     end
-
-
   end
 
   describe "#betting_round" do
+    let(:player4) { double("player4", name: "Brian", pot: 100, folded: false) }
+    let(:player5) { double("player5", name: "Kiran", pot: 80, folded: false) }
+    let(:player6) { double("player6", name: "Prashant", pot: 280, folded: false) }
 
-    it "player can fold"
+    before(:each) do
+      game.add_player(player4)
+      game.add_player(player5)
+      game.add_player(player6)
+    end
 
-    it "player raises"
+    it "player can fold" do
+      player4.stub(:bet_action).with(an_instance_of(Fixnum)) {[:fold, 0, 0]}
+      player4.stub(:folded=).with(an_instance_of(TrueClass))
+      player5.stub(:bet_action).with(an_instance_of(Fixnum)).and_return([:fold, 0, 0])
+      player5.stub(:folded=).with(an_instance_of(TrueClass))
+      player6.stub(:bet_action).with(an_instance_of(Fixnum)).and_return([:fold, 0, 0])
+      player6.stub(:folded=).with(an_instance_of(TrueClass))
+
+      player4.should_receive(:folded=).with(true)
+      game.betting_round
+    end
+
+    before(:each) do
+      player4.stub(:bet_action).with(an_instance_of(Fixnum)) {[:raise, 0, 20]}
+      player5.stub(:bet_action).with(an_instance_of(Fixnum)).and_return([:call, 20, 0])
+      player6.stub(:bet_action).with(an_instance_of(Fixnum)).and_return([:call, 20, 0])
+
+      #player6.stub(:bet=).with(an_instance_of(FixNum))
+    end
+
+    it "player raises" do
+
+
+      player4.should_receive(:folded=).with(true)
+      game.betting_round
+    end
 
     it "player calls"
 

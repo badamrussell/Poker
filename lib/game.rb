@@ -41,12 +41,17 @@ class Game
 
   def betting_round
     bets = Array.new(players.size, 0)
+    round_counter = 0
 
-    while bets.inject(:+) > 0 || players.count { |player| !player.folded } > 1
+    while bets.inject(:+) > 0 || round_counter == 0
+      round_counter += 1
+
       players.each_with_index do |player, index|
         next if player.folded
 
-        action, call_amount, raise_amount = player.action(bets[index])
+        action, call_amount, raise_amount = player.bet_action(bets[index])
+
+        self.pot += player.bet(raise_amount+call_amount)
 
         case action
 
@@ -54,20 +59,19 @@ class Game
           player.folded = true
           bets[index] = 0
         when :raise
-          # raise - raises current bet
-          # all other players now must match this
           bets.each_with_index do |amount, other_index|
             next if players[other_index].folded?
             next if other_index == index
             bets[index] += raise_amount
           end
         when :call
-          # call - match current bet
           bets[index] -= call_amount
         when :check
-          # check - bet zero (only works if no one has raised)
+
         end
       end
+
+      break if players.count { |player| !player.folded } == 1
     end
 
     #gone through each player
