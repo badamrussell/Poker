@@ -3,14 +3,19 @@ require 'rspec'
 require 'hand'
 
 describe Hand do
-  let(:cards) { [double("card1", :suit => "♠", :symbol => "10", :value => 10),
-                 double("card2", :suit => "♠", :symbol => "J", :value => 11),
-                 double("card3", :suit => "♠", :symbol => "K", :value => 13),
-                 double("card4", :suit => "♠", :symbol => "A", :value => 14),
-                 double("card5", :suit => "♠", :symbol => "Q", :value => 12)] }
-                 card_set = [Card.new("♠","10"), Card.new("♠","J"), Card.new("♠","K"), Card.new("♠","A"), Card.new("♠","Q")]
+  # let(:c_10s) { double("card1", :suit => "♠", :symbol => "10", :value => 10) }
+  # let(:c_Js) { double("card2", :suit => "♠", :symbol => "J", :value => 11) }
+  # let(:c_Ks) { double("card3", :suit => "♠", :symbol => "K", :value => 13) }
+  # let(:c_As) { double("card4", :suit => "♠", :symbol => "A", :value => 14) }
+  # let(:c_Qs) { double("card5", :suit => "♠", :symbol => "Q", :value => 12) }
+  let(:c_10s) { Card.new("♠","10") }
+  let(:c_Js) { Card.new("♠","J") }
+  let(:c_Ks) { Card.new("♠","K") }
+  let(:c_As) { Card.new("♠","A") }
+  let(:c_Qs) { Card.new("♠","Q") }
 
-  #subject(:hand) { Hand.new(cards) }
+  let(:card_set) { [c_10s, c_Js, c_Ks, c_As, c_Qs] }
+
   subject(:hand) { Hand.new(card_set) }
   its(:is_a?) { Hand }
 
@@ -18,6 +23,24 @@ describe Hand do
 
   its(:straight?) { should be_true }
   its(:flush?) { should be_true }
+
+  describe "#discard" do
+    it "should discard a card" do
+      hand.discard([c_10s, c_Qs])
+      expect(hand.cards).to eq([c_Js, c_Ks, c_As])
+    end
+
+    it "should not allow you to discard too many cards" do
+      expect do
+        hand.discard([c_Js, c_Ks, c_As, c_10s, c_Qs, c_10s])
+      end.to raise_error("cannot discard that many cards")
+    end
+  end
+
+  # describe "#draw" do
+  #   hand.draw(1)
+  #   expect(hand.count).to eq(5)
+  # end
 
   describe "#determine_hands" do
     it "royal flush" do

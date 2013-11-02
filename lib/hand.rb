@@ -13,10 +13,11 @@ class Hand
           :one_pair,
           :high_card]
 
-  attr_reader :cards
+  attr_reader :cards, :hand_size
 
-  def initialize(cards)
+  def initialize(cards,hand_size = 5)
     @cards = cards
+    @hand_size = hand_size
   end
 
   def size
@@ -31,6 +32,17 @@ class Hand
 
   def beats?(other_hand)
     SETS.index(determine_hand) < SETS.index(other_hand.determine_hand)
+  end
+
+  def discard(discard_cards)
+    raise "cannot discard that many cards" if discard_cards.size > size
+    discard_cards.each do |card|
+      @cards -= [card]
+    end
+  end
+
+  def draw(number)
+    @cards += deck.draw(number)
   end
 
   protected

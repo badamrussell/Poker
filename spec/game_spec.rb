@@ -8,6 +8,8 @@ describe Game do
 
   it "has a deck"
 
+  it "has players"
+
   it "knows whose turn it is"
 
   it "keeps track of what is in pot"

@@ -7,22 +7,16 @@ describe Player do
   let(:deck) { Deck.new }
 
   before(:each) do
-    player.hand = "A"#deck.take(5)
+    player.hand = deck.draw(5)
   end
-
 
   its(:name) { should eq "Adam" }
   its(:pot) { should eq(100) }
 
-  context "on a Player's turn" do
-    before(:each) {
 
-    }
-
-    it "can discard cards"
+  context "player's turn" do
+    it "can place bet (raise/call/ante)"
     it "can fold"
-    it "can raise"
-    it "can call"
     it "can check"
   end
 
