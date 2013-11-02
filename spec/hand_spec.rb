@@ -20,8 +20,6 @@ describe Hand do
   its(:flush?) { should be_true }
 
   describe "#determine_hands" do
-
-
     it "royal flush" do
       card_set1 = [Card.new("♠","10"), Card.new("♠","J"), Card.new("♠","K"), Card.new("♠","A"), Card.new("♠","Q")]
       hand1 = Hand.new(card_set1)
@@ -38,7 +36,6 @@ describe Hand do
       card_set1 = [Card.new("♠","3"), Card.new("♠","J"), Card.new("♠","7"), Card.new("♠","9"), Card.new("♠","Q")]
       hand1 = Hand.new(card_set1)
       expect(hand1.determine_hand).to be(:flush)
-
     end
 
     it "four of a kind" do
@@ -76,7 +73,32 @@ describe Hand do
       hand1 = Hand.new(card_set1)
       expect(hand1.determine_hand).to be(:high_card)
     end
-   end
+  end
+
+
+  describe "#beats?" do
+    it "four of a kind beats flush" do
+      card_set1 = [Card.new("♠","3"), Card.new("♠","J"), Card.new("♠","7"), Card.new("♠","9"), Card.new("♠","Q")]
+      hand1 = Hand.new(card_set1)
+      card_set2 = [Card.new("♣","J"), Card.new("♦","J"), Card.new("♥","J"), Card.new("♠","J"), Card.new("♠","Q")]
+      hand2 = Hand.new(card_set2)
+
+      expect(hand2.beats?(hand1)).to be_true
+    end
+
+    it "flush loses to full house" do
+      card_set1 = [Card.new("♠","3"), Card.new("♠","J"), Card.new("♠","7"), Card.new("♠","9"), Card.new("♠","Q")]
+      hand1 = Hand.new(card_set1)
+      card_set2 = [Card.new("♣","J"), Card.new("♦","J"), Card.new("♥","J"), Card.new("♠","Q"), Card.new("♣","Q")]
+      hand2 = Hand.new(card_set2)
+
+      expect(hand1.beats?(hand2)).to be_false
+    end
+
+    it "handles ties" do
+
+    end
+  end
 
   its(:hand_value) { should eq 100 }
 end
