@@ -23,15 +23,28 @@ class Player
     bet_amount
   end
 
-  def bet_action(bet_owed)
-    available_actions = [:fold, :raise]
-    if bet_owed == 0
-      available_actions << :check
-    else
-      available_actions << :call
-    end
+  def ui_action
+    available_actions = [:fold, :raise, :call]
+    choice = 2
 
+
+    available_actions[choice]
+  end
+
+  def ui_bet
+    20
+  end
+
+  def bet_action(bet_owed)
+
+
+    action_name = ui_action
+    new_bet =
+
+    while new_bet
     action_name, call_amount, raise_amount = :fold, 0, 0
+
+    #bet must be minumum of bet_owed
 
     [action_name, call_amount, raise_amount]
   end

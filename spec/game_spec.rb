@@ -68,21 +68,23 @@ describe Game do
       player5.stub(:bet_action).with(an_instance_of(Fixnum)).and_return([:call, 20, 0])
       player6.stub(:bet_action).with(an_instance_of(Fixnum)).and_return([:call, 20, 0])
 
-      #player6.stub(:bet=).with(an_instance_of(FixNum))
+      player4.stub(:bet).with(an_instance_of(Fixnum)).and_return(20)
+      player5.stub(:bet).with(an_instance_of(Fixnum)).and_return(20)
+      player6.stub(:bet).with(an_instance_of(Fixnum)).and_return(20)
     end
 
-    it "player raises" do
-
-
-      player4.should_receive(:folded=).with(true)
+    it "players raise and call" do
+      player4.should_receive(:bet).with(20)
+      player5.should_receive(:bet).with(20)
+      player6.should_receive(:bet).with(20)
       game.betting_round
     end
 
-    it "player calls"
+    it "pot accumulates all bets" do
+      game.betting_round
+      expect(game.pot).to eq(60)
+    end
 
-    it "player checks"
-
-    it "after raise, other plays must match"
   end
 
   it "knows whose turn it is"

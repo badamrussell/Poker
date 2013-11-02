@@ -1,8 +1,8 @@
 require 'deck'
 
 class Game
-  attr_reader :deck, :turn, :players, :ante, :deck, :pot
-
+  attr_reader :deck, :turn, :players, :ante, :deck
+  attr_accessor :pot
 
   def initialize
     @deck = Deck.new
@@ -25,7 +25,7 @@ class Game
   end
 
   def start_round
-    @pot = 0
+    self.pot = 0
     self.deck.shuffle
 
     players.each do |player|
@@ -60,7 +60,7 @@ class Game
           bets[index] = 0
         when :raise
           bets.each_with_index do |amount, other_index|
-            next if players[other_index].folded?
+            next if players[other_index].folded
             next if other_index == index
             bets[index] += raise_amount
           end
@@ -111,6 +111,6 @@ class Game
   end
 
   private
-  attr_writer :pot
+  #attr_writer :pot
 
 end
