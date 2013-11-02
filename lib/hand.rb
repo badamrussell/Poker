@@ -17,7 +17,7 @@ class Hand
 :high_card  13
 =end
 
-  SETS = [:r_flush, :s_flush, :four_kind, :full_house, :flush, :straight, :three_kind, :two_pair, :one_pair]
+  SETS = [:r_flush, :s_flush, :four_kind, :full_house, :flush, :straight, :three_kind, :two_pair, :one_pair, :high_card]
 
   attr_reader :cards
 
@@ -37,17 +37,8 @@ class Hand
     end
   end
 
-  def best_kind_set
-    kinds = num_kind
-    return :four_kind if kinds.values.include?(4)
-    return :full_house if kinds.values.include?(3) and kinds.values.include?(2)
-    return :three_kind if kinds.values.include?(3)
-    return :two_pair if kinds.select { |key, val| val == 2 }.size == 2
-    return :one_pair if kinds.values.include?(2)
-    nil
-  end
 
-  def num_kind
+  def find_kinds
     {}.tap do |kinds|
       @cards.each do |card|
         kinds[card.symbol] = count(card)
@@ -86,15 +77,27 @@ class Hand
     @cards.select { |my_card| my_card.suit == suit }.size == 5
   end
 
+  def find_flush_hand
+    return :high_card unless flush?
+    return :flush unless straight?
+    return :r_flush if high_card.symbol == "A"
+    :s_flush
+  end
+
+  def find_kinds_hand
+    kinds = find_kinds
+    return :four_kind if kinds.values.include?(4)
+    return :full_house if kinds.values.include?(3) and kinds.values.include?(2)
+    return :three_kind if kinds.values.include?(3)
+    return :two_pair if kinds.select { |key, val| val == 2 }.size == 2
+    return :one_pair if kinds.values.include?(2)
+    :high_card
+  end
+
+
   def determine_hand
-    # if all cards are the same suit
-    # :r_flush, :s_flush, :flush
-
-    #check for duplicates
-    # :four_kind, :three_kind, :two_pair, :one_pair
-    # :full_house
-
-
-
+    flush_hand = find_flush_hand
+    kinds_hand = find_kinds_hand
+    SETS.index(flush_hand) < SETS.index(kinds_hand) ? flush_hand : kinds_hand
   end
 end

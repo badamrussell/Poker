@@ -19,7 +19,64 @@ describe Hand do
   its(:straight?) { should be_true }
   its(:flush?) { should be_true }
 
-  its(:pattern) { should eq :royal_flush }
+  describe "#determine_hands" do
+
+
+    it "royal flush" do
+      card_set1 = [Card.new("♠","10"), Card.new("♠","J"), Card.new("♠","K"), Card.new("♠","A"), Card.new("♠","Q")]
+      hand1 = Hand.new(card_set1)
+      expect(hand1.determine_hand).to be(:r_flush)
+    end
+
+    it "straight flush" do
+      card_set1 = [Card.new("♠","10"), Card.new("♠","J"), Card.new("♠","K"), Card.new("♠","9"), Card.new("♠","Q")]
+      hand1 = Hand.new(card_set1)
+      expect(hand1.determine_hand).to be(:s_flush)
+    end
+
+    it "flush" do
+      card_set1 = [Card.new("♠","3"), Card.new("♠","J"), Card.new("♠","7"), Card.new("♠","9"), Card.new("♠","Q")]
+      hand1 = Hand.new(card_set1)
+      expect(hand1.determine_hand).to be(:flush)
+
+    end
+
+    it "four of a kind" do
+      card_set1 = [Card.new("♣","J"), Card.new("♦","J"), Card.new("♥","J"), Card.new("♠","J"), Card.new("♠","Q")]
+      hand1 = Hand.new(card_set1)
+      expect(hand1.determine_hand).to be(:four_kind)
+    end
+
+    it "three of a kind" do
+      card_set1 = [Card.new("♣","J"), Card.new("♦","J"), Card.new("♥","J"), Card.new("♠","A"), Card.new("♠","Q")]
+      hand1 = Hand.new(card_set1)
+      expect(hand1.determine_hand).to be(:three_kind)
+    end
+
+    it "full house" do
+      card_set1 = [Card.new("♣","J"), Card.new("♦","J"), Card.new("♥","J"), Card.new("♠","Q"), Card.new("♣","Q")]
+      hand1 = Hand.new(card_set1)
+      expect(hand1.determine_hand).to be(:full_house)
+    end
+
+    it "two pair" do
+      card_set1 = [Card.new("♣","J"), Card.new("♦","J"), Card.new("♥","5"), Card.new("♠","Q"), Card.new("♣","Q")]
+      hand1 = Hand.new(card_set1)
+      expect(hand1.determine_hand).to be(:two_pair)
+    end
+
+    it "one pair" do
+      card_set1 = [Card.new("♣","J"), Card.new("♦","J"), Card.new("♥","5"), Card.new("♠","8"), Card.new("♣","Q")]
+      hand1 = Hand.new(card_set1)
+      expect(hand1.determine_hand).to be(:one_pair)
+    end
+
+    it "high_card" do
+      card_set1 = [Card.new("♣","J"), Card.new("♦","5"), Card.new("♥","7"), Card.new("♠","2"), Card.new("♣","Q")]
+      hand1 = Hand.new(card_set1)
+      expect(hand1.determine_hand).to be(:high_card)
+    end
+   end
 
   its(:hand_value) { should eq 100 }
 end
