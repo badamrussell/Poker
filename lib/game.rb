@@ -3,7 +3,7 @@ require 'deck'
 class Game
   attr_reader :pot, :deck, :turn
 
-  initialize
+  def initialize
     @deck = Deck.new
     @players = []
     @turn = 0
@@ -51,5 +51,4 @@ class Game
 
     showdown
   end
-
 end

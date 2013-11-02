@@ -36,7 +36,7 @@ class Hand
   protected
 
   def score
-
+    # hand_set_value + hand_set_value_high_card(n) + high_card
   end
 
   private

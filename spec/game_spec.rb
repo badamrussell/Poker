@@ -1,5 +1,5 @@
 require 'rspec'
-require 'hand'
+require 'game'
 
 describe Game do
   subject(:game) { Game.new }
