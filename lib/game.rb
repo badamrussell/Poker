@@ -3,8 +3,8 @@ require_relative 'player'
 require_relative 'hand'
 
 class Game
-  attr_reader :deck, :turn, :players, :ante, :deck
-  attr_accessor :pot
+  attr_reader :turn, :players, :ante, :deck
+  attr_accessor :pot, :discard_pile, :deck
 
   def initialize
     @deck = Deck.new
@@ -73,7 +73,7 @@ class Game
 
         self.pot += player.bet(raise_amount+call_amount)
         p bets
-        puts ">>>>> #{action}, #{call_amount}, #{raise_amount}"
+
 
         case action
 
@@ -110,11 +110,13 @@ class Game
     puts "------------------------------"
 
     players.each do |player|
+      puts "#{player.name} your turn!"
       cards = player.hand.select_cards
 
+      puts "  #{player.name} discarded #{cards.size} cards!"
       if cards.size > 0
         player.hand.discard(cards)
-        discard_pile += cards
+        self.discard_pile += cards
         player.hand.draw(deck, cards.size)
       end
     end
@@ -125,12 +127,29 @@ class Game
     puts "-!- And the winner is..."
     puts "------------------------------"
 
+
     #players compare hands and a winner is determined
-    if players_remaining == 1
-      winner = players.select { |player| !player.folded }[0]
-      puts winner.name.center(30)
-      winner.hand.render
+    until players_remaining == 1
+      main_player = players.select { |player| !player.folded }[0]
+
+      players.each do |other_player|
+        next if other_player.folded
+        next if main_player == player
+
+        if main_player.hand.beats?(other_player.hand)
+          other_player.folded = true
+        else
+          main_player.folded = true
+          break
+        end
+      end
     end
+
+    winner = players.select { |player| !player.folded }[0]
+    puts "#{winner.name} wins the pot of #{pot} poker bucks!"
+    winner.hand.render
+
+    winner
   end
 
 
@@ -155,16 +174,20 @@ class Game
 
 end
 
-game = Game.new
+def test_game
+  game = Game.new
 
-granger = Player.new("Granger", 100)
-kiran = Player.new("Kiran", 100)
-brian = Player.new("Brian", 100)
-prashant = Player.new("Prashant", 100)
+  granger = Player.new("Granger", 100)
+  kiran = Player.new("Kiran", 100)
+  brian = Player.new("Brian", 100)
+  prashant = Player.new("Prashant", 100)
 
-game.add_player(granger)
-game.add_player(kiran)
-game.add_player(brian)
-game.add_player(prashant)
+  game.add_player(granger)
+  game.add_player(kiran)
+  game.add_player(brian)
+  game.add_player(prashant)
 
-game.play
+  game.play
+end
+
+test_game

@@ -50,7 +50,8 @@ class Hand
     render
     print "Type in the cards you want to discard or 's' to skip:  "
     str_input = gets.downcase.chomp.split(",")
-
+    #puts str_input
+    #str_input = "1,2,3".split(",")
     str_input = [] if str_input[0] == "s"
 
     selected_cards = []
@@ -69,8 +70,12 @@ class Hand
     end
   end
 
-  def draw(number, deck)
+  def draw(deck, number)
     @cards += deck.draw(number)
+  end
+
+  def count(card)
+    @cards.select { |my_card| my_card.symbol == card.symbol }.size
   end
 
   protected
@@ -100,17 +105,15 @@ class Hand
 
   def straight?
     diff = 0
-    @cards.sort!.reverse!
-    (0...(@cards.size - 1)).each do |index|
-      diff += (@cards[index].value - @cards[index+1].value).abs
+    sort_cards = @cards.sort.reverse
+    (0...(sort_cards.size - 1)).each do |index|
+      diff += (sort_cards[index].value - sort_cards[index+1].value).abs
     end
 
     diff == 4
   end
 
-  def count(card)
-    @cards.select { |my_card| my_card.symbol == card.symbol }.size
-  end
+
 
   def find_flush_hand
     return :high_card unless flush?
@@ -131,3 +134,5 @@ class Hand
 
 
 end
+
+

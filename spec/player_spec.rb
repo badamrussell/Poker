@@ -23,6 +23,7 @@ describe Player do
       expect(player.bet_action(5)).to eq([:fold,0,0])
     end
 
+
     # it "user can input betting action (fold)" do
     #   STDIN.stub(:gets).and_return('fold')
     #
@@ -63,5 +64,6 @@ describe Player do
 
     it "can check"
   end
+
 
 end

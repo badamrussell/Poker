@@ -31,8 +31,8 @@ describe Game do
     end
 
     it "all players have 5 cards" do
-      expect(player1.hand.count).to eq(5)
-      expect(player2.hand.count).to eq(5)
+      expect(player1.hand.size).to eq(5)
+      expect(player2.hand.size).to eq(5)
     end
 
     it "antes added to pot" do
@@ -41,14 +41,25 @@ describe Game do
   end
 
   describe "#betting_round" do
-    let(:player4) { double("player4", name: "Brian", pot: 100, folded: false) }
-    let(:player5) { double("player5", name: "Kiran", pot: 80, folded: false) }
-    let(:player6) { double("player6", name: "Prashant", pot: 280, folded: false) }
+    let(:player4) { double("player4", name: "Brian", pot: 100, folded: false, hand: "") }
+    let(:player5) { double("player5", name: "Kiran", pot: 80, folded: false, hand: "") }
+    let(:player6) { double("player6", name: "Prashant", pot: 280, folded: false, hand: "") }
 
     before(:each) do
       game.add_player(player4)
       game.add_player(player5)
       game.add_player(player6)
+
+      player1.stub(:afford_bet?).and_return(true)
+      player2.stub(:afford_bet?).and_return(true)
+      player3.stub(:afford_bet?).and_return(true)
+      player4.stub(:afford_bet?).and_return(true)
+
+      player4.stub(:folded=).with(an_instance_of(TrueClass)).and_return(true)
+      player5.stub(:folded=).with(an_instance_of(TrueClass)).and_return(true)
+      player6.stub(:folded=).with(an_instance_of(TrueClass)).and_return(true)
+      player6.stub(:folded=).with(an_instance_of(TrueClass)).and_return(true)
+      game.start_round
     end
 
     it "player can fold" do
@@ -86,8 +97,12 @@ describe Game do
     end
   end
 
-  it "knows whose turn it is"
 
-  it "keeps track of what is in pot"
+  describe "showdown" do
+    game.start_round
+
+    #player1.stub()
+
+  end
 
 end

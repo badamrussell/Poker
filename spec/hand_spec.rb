@@ -121,6 +121,18 @@ describe Hand do
     it "handles ties"
   end
 
+  describe "during the draw phase" do
+
+#     it "can select cards" do
+#       STDIN.stub(:gets).and_return('1,2,3')
+#       expect(hand.select_cards).to eq([c_10s, c_Js, c_Ks])
+#     end
+
+    it "can discard cards"
+
+    it "can draw cards"
+  end
+
 end
 
 
