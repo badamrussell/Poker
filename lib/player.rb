@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
+
 class Player
-  attr_reader :pot, :name
+  attr_reader :pot, :name, :avatar
   attr_accessor :hand, :folded
 
-  def initialize(name, pot)
+  def initialize(name, pot, avatar = "☺")
     @name = name
     @pot = pot
+    @avatar = avatar
   end
 
   def afford_bet?(amount)

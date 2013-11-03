@@ -1,10 +1,14 @@
+# -*- coding: utf-8 -*-
 require_relative 'deck'
 require_relative 'player'
 require_relative 'hand'
+require 'colorize'
 
 class Game
   attr_reader :turn, :players, :ante, :deck
   attr_accessor :pot, :discard_pile, :deck
+
+  @turn_line = "----------------------------------------------"
 
   def initialize
     @deck = Deck.new
@@ -23,18 +27,14 @@ class Game
     self.players[self.turn]
   end
 
-  def player_turn
-
-  end
-
   def players_remaining
     players.count { |player| !player.folded }
   end
 
   def start_round
-    puts "------------------------------"
+    puts @turn_line
     puts "-$- All players ante up!"
-    puts "------------------------------"
+    puts @turn_line
 
     self.pot = 0
     self.deck.shuffle
@@ -42,78 +42,103 @@ class Game
     players.each do |player|
       if player.afford_bet?(self.ante)
         player.folded = false
-        @pot += player.bet(self.ante)
-        player.hand = Hand.new(self.deck.draw(5))
-        puts "  #{player.name} antes 5 and is in the game!"
+        self.pot += player.bet(self.ante)
+        player.hand = Hand.new(self.deck.draw(self.ante))
+        puts "  #{player.name} antes #{self.ante} and is in the game!"
       else
         player.folded = true
         puts "  #{player.name} is sitting this one out."
       end
     end
+  end
 
+  def print_players(active_player, show_all = false)
+    puts "============================================================".green
+    puts "------------------------------------------------".green + "pot: $#{pot}".rjust(12)
+    puts "============================================================".green
+
+    players.each do |player|
+      if player == active_player || show_all
+        puts "#{player.avatar} " + "#{player.name}:".ljust(10) + player.hand.show.ljust(114) + " $#{player.pot}  #{player.hand.name} "
+      else
+        puts "#{player.avatar} " + "#{player.name}:".ljust(10) + player.hand.hide.ljust(114) + " $#{player.pot}"
+      end
+    end
+
+    puts "\n"
+  end
+
+  def player_action(player, action)
+
+    case action
+
+    when :fold
+      player.folded = true
+      puts "  #{player.name} folds! #{players_remaining} players left!".rjust(58)
+    when :raise
+      puts "  #{player.name} calls #{call_amount} and raises #{raise_amount}".rjust(58)
+    when :call
+      puts "  #{player.name} calls #{call_amount}".rjust(58)
+    end
   end
 
   def betting_round
-    puts "------------------------------"
+    puts @turn_line
     puts "-$- Place your bets!"
-    puts "------------------------------"
+    puts @turn_line
     bets = Array.new(players.size, 0)
     round_counter = 0
 
     while bets.inject(:+) > 0 || round_counter == 0
       round_counter += 1
+      puts "BETTING ROUND: #{round_counter}"
 
       players.each_with_index do |player, index|
         next if player.folded
 
-        puts "#{player.name} your turn!"
-        puts "   pot: #{pot}" + "   call: #{bets[index]}".rjust(20)
-        player.hand.render
+        print_players(player)
+        puts "#{player.name}'s turn!".ljust(15) + "   call: $#{bets[index]}".rjust(43)
+
+        player.hand.show
         action, call_amount, raise_amount = player.bet_action(bets[index])
 
-        self.pot += player.bet(raise_amount+call_amount)
-        p bets
+        bets.each_with_index do |amount, other_index|
+          next if players[other_index].folded
+          bets[other_index] += raise_amount
+        end
 
+        bets[index] = 0
+        self.pot += player.bet(raise_amount+call_amount)
 
         case action
 
         when :fold
           player.folded = true
-          bets[index] = 0
-          puts "  #{player.name} folds! #{players_remaining} players left!"
+          puts "  #{player.name} folds! #{players_remaining} players left!".rjust(58)
         when :raise
-          puts "  #{player.name} calls #{call_amount} and raises #{raise_amount}"
-          bets[index] -= call_amount
-
-          bets.each_with_index do |amount, other_index|
-            next if players[other_index].folded
-            next if other_index == index
-            bets[other_index] += raise_amount
-          end
+          puts "  #{player.name} calls #{call_amount} and raises #{raise_amount}".rjust(58)
         when :call
-          puts "  #{player.name} calls #{call_amount}"
-          bets[index] -= call_amount
+          puts "  #{player.name} calls #{call_amount}".rjust(58)
         end
 
-        puts "=============================================="
         return if players_remaining == 1
       end
-
-
     end
   end
 
   def draw_phase
     #each player may remove cards and replenish their hands
-    puts "------------------------------"
+    puts @turn_line
     puts "-?- Draw new cards!"
-    puts "------------------------------"
+    puts @turn_line
 
     players.each do |player|
+      print_players(player)
+
       puts "#{player.name} your turn!"
       cards = player.hand.select_cards
 
-      puts "  #{player.name} discarded #{cards.size} cards!"
+      puts "  #{player.name} discarded #{cards.size} cards!".rjust(58)
       if cards.size > 0
         player.hand.discard(cards)
         self.discard_pile += cards
@@ -123,10 +148,11 @@ class Game
   end
 
   def showdown
-    puts "------------------------------"
+    puts @turn_line
     puts "-!- And the winner is..."
-    puts "------------------------------"
+    puts @turn_line
 
+    print_players(nil, true)
 
     #players compare hands and a winner is determined
     until players_remaining == 1
@@ -134,20 +160,25 @@ class Game
 
       players.each do |other_player|
         next if other_player.folded
-        next if main_player == player
+        next if main_player == other_player
 
         if main_player.hand.beats?(other_player.hand)
+          puts " #{other_player.name}'s #{other_player.hand.name} is beaten by #{main_player.name}'s #{main_player.hand.name}."
           other_player.folded = true
+          puts "#{other_player.name} is eliminated!".rjust(60)
         else
+          puts " #{main_player.name}'s #{main_player.hand.name} is beaten by #{other_player.name}'s #{other_player.hand.name}."
           main_player.folded = true
+          puts "#{main_player.name} is eliminated!".rjust(60)
           break
         end
       end
     end
 
+    puts " so............"
     winner = players.select { |player| !player.folded }[0]
-    puts "#{winner.name} wins the pot of #{pot} poker bucks!"
-    winner.hand.render
+    puts " #{winner.name} wins the $#{pot} pot!".rjust(60)
+    winner.hand.show
 
     winner
   end
@@ -177,9 +208,9 @@ end
 def test_game
   game = Game.new
 
-  granger = Player.new("Granger", 100)
-  kiran = Player.new("Kiran", 100)
-  brian = Player.new("Brian", 100)
+  granger = Player.new("Granger", 100, "♞")
+  kiran = Player.new("Kiran", 100, "☕")
+  brian = Player.new("Brian", 100, "☠")
   prashant = Player.new("Prashant", 100)
 
   game.add_player(granger)

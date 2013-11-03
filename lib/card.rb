@@ -59,7 +59,7 @@ class Card
     0
   end
 
-  def render
+  def show
     if self.suit == "♦" || self.suit == "♥"
       "[#{self.symbol} #{self.suit}]".red
     else

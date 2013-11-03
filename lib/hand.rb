@@ -24,30 +24,39 @@ class Hand
     self.cards.size
   end
 
-  def determine_hand
+  def name
     flush_hand = find_flush_hand
     kinds_hand = find_kinds_hand
     SETS.index(flush_hand) < SETS.index(kinds_hand) ? flush_hand : kinds_hand
   end
 
   def beats?(other_hand)
-    SETS.index(determine_hand) < SETS.index(other_hand.determine_hand)
+    SETS.index(name) < SETS.index(other_hand.name)
   end
 
-  def render
-    puts "\n"
+  def show
     str_hand = "  "
     cards.each_with_index do |card, index|
-      str_hand += card.render + "  "
+      str_hand += card.show + "   "
     end
-    puts str_hand  + "  "+ determine_hand.to_s.upcase
-    puts "    1      2      3      4      5 "
-    puts "\n"
 
+    str_hand#  + "  " + name.to_s.upcase
+  end
+
+  def hide
+    str_hand = "  "
+    cards.size.times do
+       str_hand += "[ ⛆  ]".blue + "  "
+    end
+    str_hand
   end
 
   def select_cards
-    render
+    puts "\n"
+    puts show
+    puts "    1       2       3       4       5 "
+    puts "\n"
+
     print "Type in the cards you want to discard or 's' to skip:  "
     str_input = gets.downcase.chomp.split(",")
     #puts str_input
@@ -84,38 +93,38 @@ class Hand
 
   end
 
-  def score
-    total = case determine_hand
-
-    when :r_flush
-      # 10000 + flush_value(14*10) + 14
-      10000 + (high_card.value * 10)
-    when :s_flush
-      # 9000 + flush_value(14*10) + 14
-      9000 + (high_card.value * 10)
-    when :four_kind
-      # 8000 + kind_value(14*10) + 14
-      kinds = find_kinds
-
-      8000 +
-    when :full_house
-      # 6000 + three_pair(14*100) + two_pair(14*10) + 14
-
-    when :flush
-      # 5000 + flush_value(14*10) + 14
-      5000 + (high_card.value * 10)
-    when :straight
-      # 4000 + straight_value(14*10) + 14
-    when :three_kind
-      # 3000 + three_pair(14*10) + 14
-    when :two_pair
-      # 1000 + high_pair(14*100) + low_pair(14*10) + 14
-    when :one_pair
-      # 100 + pair_high_card(14*10) + 14
-    end
-
-    total += high_card.value
-  end
+  # def score
+  #   total = case name
+  #
+  #   when :r_flush
+  #     # 10000 + flush_value(14*10) + 14
+  #     10000 + (high_card.value * 10)
+  #   when :s_flush
+  #     # 9000 + flush_value(14*10) + 14
+  #     9000 + (high_card.value * 10)
+  #   when :four_kind
+  #     # 8000 + kind_value(14*10) + 14
+  #     kinds = find_kinds
+  #
+  #     8000 +
+  #   when :full_house
+  #     # 6000 + three_pair(14*100) + two_pair(14*10) + 14
+  #
+  #   when :flush
+  #     # 5000 + flush_value(14*10) + 14
+  #     5000 + (high_card.value * 10)
+  #   when :straight
+  #     # 4000 + straight_value(14*10) + 14
+  #   when :three_kind
+  #     # 3000 + three_pair(14*10) + 14
+  #   when :two_pair
+  #     # 1000 + high_pair(14*100) + low_pair(14*10) + 14
+  #   when :one_pair
+  #     # 100 + pair_high_card(14*10) + 14
+  #   end
+  #
+  #   total += high_card.value
+  # end
 
   private
 
