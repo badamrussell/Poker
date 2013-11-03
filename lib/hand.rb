@@ -2,16 +2,16 @@
 
 class Hand
 
-  SETS = [:r_flush,
-          :s_flush,
-          :four_kind,
-          :full_house,
-          :flush,
-          :straight,
-          :three_kind,
-          :two_pair,
-          :one_pair,
-          :high_card]
+  SETS = [:r_flush,     # 10000 + flush_value(14*10) + 14
+          :s_flush,     # 9000 + flush_value(14*10) + 14
+          :four_kind,   # 8000 + kind_value(14*10) + 14
+          :full_house,  # 6000 + three_pair(14*100) + two_pair(14*10) + 14
+          :flush,       # 5000 + flush_value(14*10) + 14
+          :straight,    # 4000 + straight_value(14*10) + 14
+          :three_kind,  # 3000 + three_pair(14*10) + 14
+          :two_pair,    # 1000 + high_pair(14*100) + low_pair(14*10) + 14
+          :one_pair,    # 100 + pair_high_card(14*10) + 14
+          :high_card]   # 14
 
   attr_reader :cards, :hand_size
 
@@ -80,8 +80,41 @@ class Hand
 
   protected
 
+  def find_high_card
+
+  end
+
   def score
-    # hand_set_value + hand_set_value_high_card(n) + high_card
+    total = case determine_hand
+
+    when :r_flush
+      # 10000 + flush_value(14*10) + 14
+      10000 + (high_card.value * 10)
+    when :s_flush
+      # 9000 + flush_value(14*10) + 14
+      9000 + (high_card.value * 10)
+    when :four_kind
+      # 8000 + kind_value(14*10) + 14
+      kinds = find_kinds
+
+      8000 +
+    when :full_house
+      # 6000 + three_pair(14*100) + two_pair(14*10) + 14
+
+    when :flush
+      # 5000 + flush_value(14*10) + 14
+      5000 + (high_card.value * 10)
+    when :straight
+      # 4000 + straight_value(14*10) + 14
+    when :three_kind
+      # 3000 + three_pair(14*10) + 14
+    when :two_pair
+      # 1000 + high_pair(14*100) + low_pair(14*10) + 14
+    when :one_pair
+      # 100 + pair_high_card(14*10) + 14
+    end
+
+    total += high_card.value
   end
 
   private
