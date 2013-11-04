@@ -38,6 +38,7 @@ class Player
     when "c"
       :call
     else
+      puts "Invalid command."
       ui_action
     end
   end
@@ -65,6 +66,7 @@ class Player
 
     while action_name == :raise
       if raise_amount == 0 || raise_amount > temp_pot
+        raise_amount = 0
         action_name = ui_action
         raise_amount = ui_bet if action_name == :raise
       else

@@ -31,7 +31,6 @@ class Hand
   end
 
   def beats?(other_hand)
-    #SETS.index(name) < SETS.index(other_hand.name)
     #p "#{score}  ><  #{other_hand.score}"
     score > other_hand.score
   end
@@ -42,7 +41,7 @@ class Hand
       str_hand += card.show + "   "
     end
 
-    str_hand#  + "  " + name.to_s.upcase
+    str_hand
   end
 
   def hide
@@ -61,8 +60,7 @@ class Hand
 
     print "Type in the cards you want to discard or 's' to skip:  "
     str_input = gets.downcase.chomp.split(",")
-    #puts str_input
-    #str_input = "1,2,3".split(",")
+
     str_input = [] if str_input[0] == "s"
 
     selected_cards = []
@@ -91,71 +89,62 @@ class Hand
 
   protected
 
-  def find_kind_value(kinds_set, matches, hi = true)
-    #matched_values = kinds_set.select { |symbol, match_count| match_count == matches }
-    matched_values = []
+  def find_kind_value(kinds_set, match_value, hi = true)
+    matches = []
     kinds_set.each do |card_value, match_count|
-      matched_values << card_value if match_count == matches
+      matches << card_value if match_count == match_value
     end
 
-    #p matched_values
-    if matched_values.count == 1
-      matched_values[0]
-    elsif hi
-      if matched_values[0] < matched_values[1]
-        matched_values[1]
-      else
-        matched_values[0]
-      end
+    return matches[0] if matches.count == 1
+
+    if hi
+      matches[0] > matches[1] ? matches[0] : matches[1]
     else
-      if matched_values[0] < matched_values[1]
-        matched_values[0]
-      else
-        matched_values[1]
-      end
+      matches[0] < matches[1] ? matches[0] : matches[1]
     end
   end
 
   def score
-    total = case name
+    x_10 = 0
+    x_100 = 0
+
+    case name
     when :r_flush
-      # 10000 + flush_value(14*10) + 14
-      10000 + (high_card.value * 10)
+      x_10 = high_card.value
     when :s_flush
-      # 9000 + flush_value(14*10) + 14
-      9000 + (high_card.value * 10)
+      x_10 = high_card.value
     when :four_kind
-      # 8000 + kind_value(14*10) + 14
-      kinds = find_kinds
-      8000 + (find_kind_value(kinds,4) * 10)
+      x_10 = find_kind_value(find_kinds,4)
     when :full_house
-      # 6000 + three_pair(14*100) + two_pair(14*10) + 14
       kinds = find_kinds
-      6000 + (find_kind_value(kinds,3) * 100) + (find_kind_value(kinds,2) * 10)
+      x_10 = find_kind_value(kinds,2)
+      x_100 = find_kind_value(kinds,3)
     when :flush
-      # 5000 + flush_value(14*10) + 14
-      5000 + (high_card.value * 10)
+      x_10 = high_card.value
     when :straight
-      # 4000 + straight_value(14*10) + 14
-      4000 + (high_card.value * 10)
+      x_10 = high_card.value
     when :three_kind
-      # 3000 + three_pair(14*10) + 14
-      kinds = find_kinds
-      3000 + (find_kind_value(kinds,3) * 10)
+      x_10 = find_kind_value(find_kinds,3)
     when :two_pair
-      # 1000 + high_pair(14*100) + low_pair(14*10) + 14
       kinds = find_kinds
-      1000 + (find_kind_value(kinds,2,true) * 100) + (find_kind_value(kinds,2,false) * 10)
+      x_10 = find_kind_value(kinds,2,false)
+      x_100 = find_kind_value(kinds,2,true)
     when :one_pair
-      # 100 + pair_high_card(14*10) + 14
-      kinds = find_kinds
-      100 + (find_kind_value(kinds,2) * 10)
+      x_10 = find_kind_value(find_kinds,2)
     else
       0
     end
 
-    #p name
-    total += high_card.value
+    total = (SETS.length - SETS.index(name)) * 100
+    total += (x_10 * 10) + (x_100 * 100) + high_card.value
+
+    #puts "#{name}: #{total}"
+
+    total
+  end
+
+  def include_symbol?(other_symbol)
+    @cards.any? { |card| card.symbol == other_symbol }
   end
 
   private
@@ -180,24 +169,24 @@ class Hand
   def straight?
     sort_cards = @cards.sort.reverse
 
-    diff = if sort_cards[0].value == 14 && sort_cards[1].value == 5
-      1
+    next_value = if sort_cards[0].symbol == :ace && sort_cards[1].value == 5
+      5
     else
-      sort_cards[0].value - sort_cards[1].value
+      sort_cards[0].value - 1
     end
 
-    (1...(sort_cards.size - 1)).each do |index|
-      diff += (sort_cards[index].value - sort_cards[index+1].value).abs
+    (1...sort_cards.length).each do |index|
+      return false unless next_value == sort_cards[index].value
+      next_value -= 1
     end
 
-    #puts "STRAIGHT?: #{diff}"
-    diff == 4
+    true
   end
 
   def find_flush_hand
     return :high_card unless flush?
     return :flush unless straight?
-    return :r_flush if high_card.symbol == "A"
+    return :r_flush if high_card.symbol == "A" && include_symbol?("K")
     :s_flush
   end
 
