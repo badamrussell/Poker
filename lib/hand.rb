@@ -150,8 +150,11 @@ class Hand
       # 100 + pair_high_card(14*10) + 14
       kinds = find_kinds
       100 + (find_kind_value(kinds,2) * 10)
+    else
+      0
     end
 
+    #p name
     total += high_card.value
   end
 
@@ -175,12 +178,19 @@ class Hand
   end
 
   def straight?
-    diff = 0
     sort_cards = @cards.sort.reverse
-    (0...(sort_cards.size - 1)).each do |index|
+
+    diff = if sort_cards[0].value == 14 && sort_cards[1].value == 5
+      1
+    else
+      sort_cards[0].value - sort_cards[1].value
+    end
+
+    (1...(sort_cards.size - 1)).each do |index|
       diff += (sort_cards[index].value - sort_cards[index+1].value).abs
     end
 
+    #puts "STRAIGHT?: #{diff}"
     diff == 4
   end
 

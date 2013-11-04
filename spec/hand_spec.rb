@@ -128,19 +128,28 @@ describe Hand do
 
         expect(hand1.beats?(hand2)).to be_false
       end
-      it "2 pairs with hi-card (3,7 > Q) & (J,6 > A)" do
+      it "2 pairs with hi-card (3,7 > Q) & (3,7 > A)" do
         card_set1 = [Card.new("♠","3"), Card.new("♦","3"), Card.new("♥","7"), Card.new("♠","7"), Card.new("♠","Q")]
         hand1 = Hand.new(card_set1)
         card_set2 = [Card.new("♣","3"), Card.new("♥","3"), Card.new("♣","7"), Card.new("♦","7"), Card.new("♣","A")]
         hand2 = Hand.new(card_set2)
 
-        expect(hand1.beats?(hand2)).to be_false
+        expect(hand2.beats?(hand1)).to be_true
       end
 
       it "2 flushes (Q) & (A)" do
         card_set1 = [Card.new("♠","3"), Card.new("♠","4"), Card.new("♠","10"), Card.new("♠","7"), Card.new("♠","Q")]
         hand1 = Hand.new(card_set1)
         card_set2 = [Card.new("♥","A"), Card.new("♥","J"), Card.new("♥","2"), Card.new("♥","6"), Card.new("♥","10")]
+        hand2 = Hand.new(card_set2)
+
+        expect(hand1.beats?(hand2)).to be_false
+      end
+
+      it "2 straights (lo-A) and (hi-A)" do
+        card_set1 = [Card.new("♠","A"), Card.new("♠","2"), Card.new("♥","3"), Card.new("♠","4"), Card.new("♠","5")]
+        hand1 = Hand.new(card_set1)
+        card_set2 = [Card.new("♥","10"), Card.new("♥","J"), Card.new("♦","Q"), Card.new("♥","K"), Card.new("♥","A")]
         hand2 = Hand.new(card_set2)
 
         expect(hand1.beats?(hand2)).to be_false
