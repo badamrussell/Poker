@@ -31,7 +31,8 @@ class Hand
   end
 
   def beats?(other_hand)
-    SETS.index(name) < SETS.index(other_hand.name)
+    #SETS.index(name) < SETS.index(other_hand.name)
+    score > other_hand.score
   end
 
   def show
@@ -89,42 +90,64 @@ class Hand
 
   protected
 
-  def find_high_card
+  def find_kind_value(kinds_set, matches, hi = true)
+    matched_values = kinds_set.select { |symbol, match_count| match_count == matches }
 
+    if matched_values.count == 1
+      matched_values[0].value
+    elsif hi
+      if matched_values[0].value < matched_values[1].value
+        matched_values[1].value
+      else
+        matched_values[0].value
+      end
+    else
+      if matched_values[0].value < matched_values[1].value
+        matched_values[0].value
+      else
+        matched_values[1].value
+      end
+    end
   end
 
-  # def score
-  #   total = case name
-  #
-  #   when :r_flush
-  #     # 10000 + flush_value(14*10) + 14
-  #     10000 + (high_card.value * 10)
-  #   when :s_flush
-  #     # 9000 + flush_value(14*10) + 14
-  #     9000 + (high_card.value * 10)
-  #   when :four_kind
-  #     # 8000 + kind_value(14*10) + 14
-  #     kinds = find_kinds
-  #
-  #     8000 +
-  #   when :full_house
-  #     # 6000 + three_pair(14*100) + two_pair(14*10) + 14
-  #
-  #   when :flush
-  #     # 5000 + flush_value(14*10) + 14
-  #     5000 + (high_card.value * 10)
-  #   when :straight
-  #     # 4000 + straight_value(14*10) + 14
-  #   when :three_kind
-  #     # 3000 + three_pair(14*10) + 14
-  #   when :two_pair
-  #     # 1000 + high_pair(14*100) + low_pair(14*10) + 14
-  #   when :one_pair
-  #     # 100 + pair_high_card(14*10) + 14
-  #   end
-  #
-  #   total += high_card.value
-  # end
+  def score
+    total = case name
+    when :r_flush
+      # 10000 + flush_value(14*10) + 14
+      10000 + (high_card.value * 10)
+    when :s_flush
+      # 9000 + flush_value(14*10) + 14
+      9000 + (high_card.value * 10)
+    when :four_kind
+      # 8000 + kind_value(14*10) + 14
+      kinds = find_kinds
+      8000 + (find_kind_value(kinds,4) * 10)
+    when :full_house
+      # 6000 + three_pair(14*100) + two_pair(14*10) + 14
+      kinds = find_kinds
+      6000 + (find_kind_value(kinds,3) * 100) + (find_kind_value(kinds,2) * 10)
+    when :flush
+      # 5000 + flush_value(14*10) + 14
+      5000 + (high_card.value * 10)
+    when :straight
+      # 4000 + straight_value(14*10) + 14
+      4000 + (high_card.value * 10)
+    when :three_kind
+      # 3000 + three_pair(14*10) + 14
+      kinds = find_kinds
+      3000 + (find_kind_value(kinds,3) * 10)
+    when :two_pair
+      # 1000 + high_pair(14*100) + low_pair(14*10) + 14
+      kinds = find_kinds
+      1000 + (find_kind_value(kinds,2,true) * 100) + (find_kind_value(kinds,2,false) * 10)
+    when :one_pair
+      # 100 + pair_high_card(14*10) + 14
+      kinds = find_kinds
+      100 + (find_kind_value(kinds,2) * 10)
+    end
+
+    total += high_card.value
+  end
 
   private
 
@@ -155,8 +178,6 @@ class Hand
     diff == 4
   end
 
-
-
   def find_flush_hand
     return :high_card unless flush?
     return :flush unless straight?
@@ -173,8 +194,6 @@ class Hand
     return :one_pair if kinds.values.include?(2)
     :high_card
   end
-
-
 end
 
 

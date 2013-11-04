@@ -118,7 +118,14 @@ describe Hand do
       expect(hand1.beats?(hand2)).to be_false
     end
 
-    it "handles ties"
+    it "handles ties" do
+      card_set1 = [Card.new("♠","3"), Card.new("♦","3"), Card.new("♥","7"), Card.new("♠","7"), Card.new("♠","Q")]
+      hand1 = Hand.new(card_set1)
+      card_set2 = [Card.new("♣","J"), Card.new("♦","J"), Card.new("♥","6"), Card.new("♠","6"), Card.new("♣","Q")]
+      hand2 = Hand.new(card_set2)
+
+       expect(hand1.beats?(hand2)).to be_false
+    end
   end
 
   describe "during the draw phase" do
