@@ -8,8 +8,6 @@ class Game
   attr_reader :turn, :players, :ante, :deck
   attr_accessor :pot, :discard_pile, :deck
 
-  @turn_line = "----------------------------------------------"
-
   def initialize
     @deck = Deck.new
     @discard_pile = []
@@ -32,9 +30,7 @@ class Game
   end
 
   def start_round
-    puts @turn_line
     puts "-$- All players ante up!"
-    puts @turn_line
 
     self.pot = 0
     self.deck.shuffle
@@ -68,24 +64,8 @@ class Game
     puts "\n"
   end
 
-  def player_action(player, action)
-
-    case action
-
-    when :fold
-      player.folded = true
-      puts "  #{player.name} folds! #{players_remaining} players left!".rjust(58)
-    when :raise
-      puts "  #{player.name} calls #{call_amount} and raises #{raise_amount}".rjust(58)
-    when :call
-      puts "  #{player.name} calls #{call_amount}".rjust(58)
-    end
-  end
-
   def betting_round
-    puts @turn_line
     puts "-$- Place your bets!"
-    puts @turn_line
     bets = Array.new(players.size, 0)
     round_counter = 0
 
@@ -98,7 +78,6 @@ class Game
 
         print_players(player)
         puts "#{player.name}'s turn!".ljust(15) + "   call: $#{bets[index]}".rjust(43)
-
         player.hand.show
         action, call_amount, raise_amount = player.bet_action(bets[index])
 
@@ -106,12 +85,10 @@ class Game
           next if players[other_index].folded
           bets[other_index] += raise_amount
         end
-
         bets[index] = 0
         self.pot += player.bet(raise_amount+call_amount)
 
         case action
-
         when :fold
           player.folded = true
           puts "  #{player.name} folds! #{players_remaining} players left!".rjust(58)
@@ -128,9 +105,7 @@ class Game
 
   def draw_phase
     #each player may remove cards and replenish their hands
-    puts @turn_line
     puts "-?- Draw new cards!"
-    puts @turn_line
 
     players.each do |player|
       print_players(player)
@@ -148,9 +123,7 @@ class Game
   end
 
   def showdown
-    puts @turn_line
     puts "-!- And the winner is..."
-    puts @turn_line
 
     print_players(nil, true)
 
