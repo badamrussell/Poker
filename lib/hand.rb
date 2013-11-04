@@ -32,6 +32,7 @@ class Hand
 
   def beats?(other_hand)
     #SETS.index(name) < SETS.index(other_hand.name)
+    #p "#{score}  ><  #{other_hand.score}"
     score > other_hand.score
   end
 
@@ -91,21 +92,26 @@ class Hand
   protected
 
   def find_kind_value(kinds_set, matches, hi = true)
-    matched_values = kinds_set.select { |symbol, match_count| match_count == matches }
+    #matched_values = kinds_set.select { |symbol, match_count| match_count == matches }
+    matched_values = []
+    kinds_set.each do |card_value, match_count|
+      matched_values << card_value if match_count == matches
+    end
 
+    #p matched_values
     if matched_values.count == 1
-      matched_values[0].value
+      matched_values[0]
     elsif hi
-      if matched_values[0].value < matched_values[1].value
-        matched_values[1].value
+      if matched_values[0] < matched_values[1]
+        matched_values[1]
       else
-        matched_values[0].value
+        matched_values[0]
       end
     else
-      if matched_values[0].value < matched_values[1].value
-        matched_values[0].value
+      if matched_values[0] < matched_values[1]
+        matched_values[0]
       else
-        matched_values[1].value
+        matched_values[1]
       end
     end
   end
@@ -154,7 +160,7 @@ class Hand
   def find_kinds
     {}.tap do |kinds|
       @cards.each do |card|
-        kinds[card.symbol] = count(card)
+        kinds[card.value] = count(card)
       end
     end
   end
@@ -190,7 +196,7 @@ class Hand
     return :four_kind if kinds.values.include?(4)
     return :full_house if kinds.values.include?(3) and kinds.values.include?(2)
     return :three_kind if kinds.values.include?(3)
-    return :two_pair if kinds.select { |key, val| val == 2 }.size == 2
+    return :two_pair if kinds.select { |card, val| val == 2 }.size == 2
     return :one_pair if kinds.values.include?(2)
     :high_card
   end

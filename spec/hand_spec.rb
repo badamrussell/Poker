@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'rspec'
 require 'hand'
+require 'card'
 
 describe Hand do
   # let(:c_10s) { double("card1", :suit => "♠", :symbol => "10", :value => 10) }
@@ -16,7 +17,7 @@ describe Hand do
 
   let(:card_set) { [c_10s, c_Js, c_Ks, c_As, c_Qs] }
 
-  subject(:hand) { Hand.new(card_set) }
+  subject(:hand) { Hand.new([c_10s, c_Js, c_Ks, c_As, c_Qs]) }
   its(:is_a?) { Hand }
 
   its(:size) { should eq 5 }
@@ -118,13 +119,32 @@ describe Hand do
       expect(hand1.beats?(hand2)).to be_false
     end
 
-    it "handles ties" do
-      card_set1 = [Card.new("♠","3"), Card.new("♦","3"), Card.new("♥","7"), Card.new("♠","7"), Card.new("♠","Q")]
-      hand1 = Hand.new(card_set1)
-      card_set2 = [Card.new("♣","J"), Card.new("♦","J"), Card.new("♥","6"), Card.new("♠","6"), Card.new("♣","Q")]
-      hand2 = Hand.new(card_set2)
+    describe "handles ties" do
+      it "2 pairs (3,7) & (J,6)" do
+        card_set1 = [Card.new("♠","3"), Card.new("♦","3"), Card.new("♥","7"), Card.new("♠","7"), Card.new("♠","Q")]
+        hand1 = Hand.new(card_set1)
+        card_set2 = [Card.new("♣","J"), Card.new("♦","J"), Card.new("♥","6"), Card.new("♠","6"), Card.new("♣","Q")]
+        hand2 = Hand.new(card_set2)
 
-       expect(hand1.beats?(hand2)).to be_false
+        expect(hand1.beats?(hand2)).to be_false
+      end
+      it "2 pairs with hi-card (3,7 > Q) & (J,6 > A)" do
+        card_set1 = [Card.new("♠","3"), Card.new("♦","3"), Card.new("♥","7"), Card.new("♠","7"), Card.new("♠","Q")]
+        hand1 = Hand.new(card_set1)
+        card_set2 = [Card.new("♣","3"), Card.new("♥","3"), Card.new("♣","7"), Card.new("♦","7"), Card.new("♣","A")]
+        hand2 = Hand.new(card_set2)
+
+        expect(hand1.beats?(hand2)).to be_false
+      end
+
+      it "2 flushes (Q) & (A)" do
+        card_set1 = [Card.new("♠","3"), Card.new("♠","4"), Card.new("♠","10"), Card.new("♠","7"), Card.new("♠","Q")]
+        hand1 = Hand.new(card_set1)
+        card_set2 = [Card.new("♥","A"), Card.new("♥","J"), Card.new("♥","2"), Card.new("♥","6"), Card.new("♥","10")]
+        hand2 = Hand.new(card_set2)
+
+        expect(hand1.beats?(hand2)).to be_false
+      end
     end
   end
 
