@@ -32,9 +32,6 @@ class Game
   def start_round
     puts "-$- All players ante up!"
 
-    self.pot = 0
-    self.deck.shuffle
-
     players.each do |player|
       if player.afford_bet?(self.ante)
         player.folded = false
@@ -64,43 +61,51 @@ class Game
     puts "\n"
   end
 
-  def betting_round
+  def update_
+  def betting_round(ante_up = false)
     puts "-$- Place your bets!"
-    bets = Array.new(players.size, 0)
     round_counter = 0
+
+    players.each do |player|
+      player.call_bet = 0
+    end
 
     while bets.inject(:+) > 0 || round_counter == 0
       round_counter += 1
       puts "BETTING ROUND: #{round_counter}"
 
-      players.each_with_index do |player, index|
+      players.each do |player|
         next if player.folded
 
         print_players(player)
-        puts "#{player.name}'s turn!".ljust(15) + "   call: $#{bets[index]}".rjust(43)
+        puts "#{player.name}'s turn!".ljust(15) + "   call: $#{player.call_bet}".rjust(43)
         player.hand.show
-        action, call_amount, raise_amount = player.bet_action(bets[index])
 
-        bets.each_with_index do |amount, other_index|
-          next if players[other_index].folded
-          bets[other_index] += raise_amount
+        raise_amount = 0
+        while raise_amount == 0 && !player.folded
+          if player.turn_action == :fold
+            player.folded = true
+          else
+            raise_amount = player.make_bet
+          end
         end
-        bets[index] = 0
-        self.pot += player.bet(raise_amount+call_amount)
 
-        case action
-        when :fold
-          player.folded = true
-          puts "  #{player.name} folds! #{players_remaining} players left!".rjust(58)
-        when :raise
-          puts "  #{player.name} calls #{call_amount} and raises #{raise_amount}".rjust(58)
-        when :call
-          puts "  #{player.name} calls #{call_amount}".rjust(58)
+        if raise_amount > 0
+          raise_amount -= player.call_bet
+
+          players.each { |other_player| other_player.increase_call_bet(raise_amount) }
+
+          self.pot += player.bet(raise_amount + player.call_bet)
+
+          puts " #{player.name} calls $#{call_amount}." if player.call_bet > 0
+          puts " #{player.name} raises $#{raise_amount}." if raise_amount > 0
         end
+
+        player.call_bet = 0
 
         return if players_remaining == 1
       end
-    end
+     end
   end
 
   def draw_phase
@@ -161,6 +166,9 @@ class Game
     #collects a pot from each player
     #deals a hand to each player
 
+
+    self.pot = 0
+    self.deck.shuffle
 
     start_round
 

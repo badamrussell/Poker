@@ -2,12 +2,21 @@
 
 class Player
   attr_reader :pot, :name, :avatar
-  attr_accessor :hand, :folded
+  attr_accessor :hand, :folded, :minimum_bet
 
   def initialize(name, pot, avatar = "☺")
     @name = name
     @pot = pot
     @avatar = avatar
+    @minimum_bet = 0
+  end
+
+  def reset_bet
+    self.minimum_bet = 0
+  end
+
+  def add_to_min_bet(amount)
+    self.minimum_bet += amount unless self.folded
   end
 
   def afford_bet?(amount)
@@ -26,57 +35,34 @@ class Player
     bet_amount
   end
 
-  def ui_action
-    print "Fold, Raise or Call?  >"
+  def turn_action
+    print "(F)old or (B)et?  >"
     user_input = gets.downcase.chomp
 
     case user_input[0]
     when "f"
+      puts " #{self.name} folds!"
       :fold
-    when "r"
-      :raise
-    when "c"
-      :call
+    else
+      :bet
     else
       puts "Invalid command."
       ui_action
     end
   end
 
-  def ui_bet
-    print "How much would you like to raise? (max 10) >"
+  def make_bet(minimum_bet)
+    print "How much would you like to raise? (min $#{minimum_bet}) >"
     new_bet = gets.chomp.to_i.abs
 
-    if new_bet > pot || new_bet > 10
+    if new_bet > pot
       puts "That bet is invalid"
+      new_bet = 0
+    elsif new_bet < minimum_bet
+      puts "You must bet at least $#{minimum_bet}"
       new_bet = 0
     end
 
     new_bet
   end
-
-  def bet_action(bet_owed)
-    raise_amount = 0
-    call_amount = 0
-
-    action_name = ui_action
-    raise_amount = ui_bet if action_name == :raise
-
-    temp_pot = pot - bet_owed
-
-    while action_name == :raise
-      if raise_amount == 0 || raise_amount > temp_pot
-        raise_amount = 0
-        action_name = ui_action
-        raise_amount = ui_bet if action_name == :raise
-      else
-        break
-      end
-    end
-
-    call_amount = bet_owed unless action_name == :fold
-
-    [action_name, call_amount, raise_amount]
-  end
-
 end
