@@ -51,7 +51,9 @@ class Game
     puts "============================================================".green
 
     players.each do |player|
-      if player == active_player || show_all
+      if player.folded
+        puts "#{player.avatar} " + "#{player.name}:".ljust(10) + "  [ ☠ ]   [ ☠ ]   [ ☠ ]   [ ☠ ]   [ ☠ ]".ljust(44) + " $#{player.pot}"
+      elsif player == active_player || show_all
         puts "#{player.avatar} " + "#{player.name}:".ljust(10) + player.hand.show.ljust(114) + " $#{player.pot}  #{player.hand.name} "
       else
         puts "#{player.avatar} " + "#{player.name}:".ljust(10) + player.hand.hide.ljust(114) + " $#{player.pot}"
@@ -61,7 +63,10 @@ class Game
     puts "\n"
   end
 
-  def update_
+  def continue_betting?
+    players.inject(0) { |sum, player| sum + player.call_bet } > 0
+  end
+
   def betting_round(ante_up = false)
     puts "-$- Place your bets!"
     round_counter = 0
@@ -70,10 +75,12 @@ class Game
       player.call_bet = 0
     end
 
-    while bets.inject(:+) > 0 || round_counter == 0
+    # ROUND MUST CONTINUE UNTIL ALL PLAYERS HAVE BET EQUAL AMOUNTS
+    while continue_betting? || round_counter == 0
       round_counter += 1
       puts "BETTING ROUND: #{round_counter}"
 
+      # EACH PLAYER HAS AN OPPORTUNITY TO FOLD OR BET
       players.each do |player|
         next if player.folded
 
@@ -82,22 +89,30 @@ class Game
         player.hand.show
 
         raise_amount = 0
-        while raise_amount == 0 && !player.folded
-          if player.turn_action == :fold
+        while raise_amount == 0
+          case player.turn_action
+          when :fold
+            puts " #{player.name} folds!"
             player.folded = true
+            break
+          when :call
+            raise_amount = player.call_bet
+            break
           else
             raise_amount = player.make_bet
           end
         end
 
         if raise_amount > 0
+          call_amount = player.call_bet
           raise_amount -= player.call_bet
+
 
           players.each { |other_player| other_player.increase_call_bet(raise_amount) }
 
-          self.pot += player.bet(raise_amount + player.call_bet)
+          self.pot += player.bet(raise_amount + call_amount)
 
-          puts " #{player.name} calls $#{call_amount}." if player.call_bet > 0
+          puts " #{player.name} calls $#{call_amount}." if call_amount > 0
           puts " #{player.name} raises $#{raise_amount}." if raise_amount > 0
         end
 
@@ -105,7 +120,7 @@ class Game
 
         return if players_remaining == 1
       end
-     end
+    end
   end
 
   def draw_phase
@@ -113,6 +128,7 @@ class Game
     puts "-?- Draw new cards!"
 
     players.each do |player|
+      next if player.folded
       print_players(player)
 
       puts "#{player.name} your turn!"
@@ -153,7 +169,6 @@ class Game
       end
     end
 
-    puts " so............"
     winner = players.select { |player| !player.folded }[0]
     puts " #{winner.name} wins the $#{pot} pot!".rjust(60)
     winner.hand.show
@@ -165,7 +180,6 @@ class Game
   def play
     #collects a pot from each player
     #deals a hand to each player
-
 
     self.pot = 0
     self.deck.shuffle
@@ -197,7 +211,7 @@ def test_game
   game.add_player(granger)
   game.add_player(kiran)
   game.add_player(brian)
-  game.add_player(prashant)
+  game.add_player(tim)
 
   game.play
 end
