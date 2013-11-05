@@ -32,7 +32,7 @@ class Player
   end
 
   def turn_action
-    print "(F)old or (B)et? or (C)all >"
+    print "#{self.name.capitalize}, (F)old, (B)et? or (C)all >"
     user_input = gets.downcase.chomp
 
     case user_input[0]

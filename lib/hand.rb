@@ -2,16 +2,16 @@
 
 class Hand
 
-  SETS = [:r_flush,     # 10000 + flush_value(14*10) + 14
-          :s_flush,     # 9000 + flush_value(14*10) + 14
-          :four_kind,   # 8000 + kind_value(14*10) + 14
-          :full_house,  # 6000 + three_pair(14*100) + two_pair(14*10) + 14
-          :flush,       # 5000 + flush_value(14*10) + 14
-          :straight,    # 4000 + straight_value(14*10) + 14
-          :three_kind,  # 3000 + three_pair(14*10) + 14
-          :two_pair,    # 1000 + high_pair(14*100) + low_pair(14*10) + 14
-          :one_pair,    # 100 + pair_high_card(14*10) + 14
-          :high_card]   # 14
+  SETS = [:r_flush,
+          :s_flush,
+          :four_kind,
+          :full_house,
+          :flush,
+          :straight,
+          :three_kind,
+          :two_pair,
+          :one_pair,
+          :high_card]
 
   attr_reader :cards, :hand_size
 
@@ -85,6 +85,10 @@ class Hand
 
   def count(card)
     @cards.select { |my_card| my_card.symbol == card.symbol }.size
+  end
+
+  def has_a?(card_value)
+    @cards.any? { |card| card.value == card_value }
   end
 
   protected
@@ -169,18 +173,14 @@ class Hand
   def straight?
     sort_cards = @cards.sort.reverse
 
-    next_value = if sort_cards[0].symbol == :ace && sort_cards[1].value == 5
-      5
+    straight_set = if sort_cards[0] == "A" && has_a?(2)
+      Card.get_symbols[0..3] + [:ace]
     else
-      sort_cards[0].value - 1
+      low_index = Cards.get_symbols.index[sort_cards.last.symbol]
+      Card.get_symbols[low_index..(low_index+4)]
     end
 
-    (1...sort_cards.length).each do |index|
-      return false unless next_value == sort_cards[index].value
-      next_value -= 1
-    end
-
-    true
+    @cards.map(&:value) == straight_set
   end
 
   def find_flush_hand

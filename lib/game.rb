@@ -30,6 +30,7 @@ class Game
   end
 
   def start_round
+    puts "\n"
     puts "-$- All players ante up!"
 
     players.each do |player|
@@ -68,6 +69,7 @@ class Game
   end
 
   def betting_round(ante_up = false)
+    puts "\n"
     puts "-$- Place your bets!"
     round_counter = 0
 
@@ -75,17 +77,18 @@ class Game
       player.call_bet = 0
     end
 
+#BUG > ROUND SHOULD STOP IMMEDIATELY STOP WHEN ALL PLAYERS HAVE BET EQUAL
     # ROUND MUST CONTINUE UNTIL ALL PLAYERS HAVE BET EQUAL AMOUNTS
     while continue_betting? || round_counter == 0
       round_counter += 1
-      puts "BETTING ROUND: #{round_counter}"
+      puts "BETTING ROUND: #{round_counter}".rjust(60)
 
       # EACH PLAYER HAS AN OPPORTUNITY TO FOLD OR BET
       players.each do |player|
         next if player.folded
 
         print_players(player)
-        puts "#{player.name}'s turn!".ljust(15) + "   call: $#{player.call_bet}".rjust(43)
+        puts "call: $#{player.call_bet}".rjust(60)
         player.hand.show
 
         raise_amount = 0
@@ -107,13 +110,13 @@ class Game
           call_amount = player.call_bet
           raise_amount -= player.call_bet
 
-
           players.each { |other_player| other_player.increase_call_bet(raise_amount) }
 
           self.pot += player.bet(raise_amount + call_amount)
 
-          puts " #{player.name} calls $#{call_amount}." if call_amount > 0
-          puts " #{player.name} raises $#{raise_amount}." if raise_amount > 0
+          puts "\n"
+          puts "#{player.name} calls $#{call_amount}".rjust(60) if call_amount > 0
+          puts "#{player.name} raises $#{raise_amount}".rjust(60) if raise_amount > 0
         end
 
         player.call_bet = 0
