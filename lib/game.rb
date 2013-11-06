@@ -30,8 +30,7 @@ class Game
   end
 
   def start_round
-    puts "\n"
-    puts "-$- All players ante up!"
+    puts "\n\n-$- All players ante up!"
 
     players.each do |player|
       if player.afford_bet?(self.ante)
@@ -153,24 +152,16 @@ class Game
     print_players(nil, true)
 
     #players compare hands and a winner is determined
-    until players_remaining == 1
-      main_player = players.select { |player| !player.folded }[0]
+    players_left = players.select { |player| !player.folded }
 
-      players.each do |other_player|
-        next if other_player.folded
-        next if main_player == other_player
+    until players_left.size == 1
+      versus = [players_left[0], players_left[1]]
+      versus.reverse! if versus[1].hand.beats?(versus[0].hand)
 
-        if main_player.hand.beats?(other_player.hand)
-          puts " #{other_player.name}'s #{other_player.hand.name} is beaten by #{main_player.name}'s #{main_player.hand.name}."
-          other_player.folded = true
-          puts "#{other_player.name} is eliminated!".rjust(60)
-        else
-          puts " #{main_player.name}'s #{main_player.hand.name} is beaten by #{other_player.name}'s #{other_player.hand.name}."
-          main_player.folded = true
-          puts "#{main_player.name} is eliminated!".rjust(60)
-          break
-        end
-      end
+      puts "#{versus[1].name}'s #{versus[1].hand.name} is beaten by #{versus[0].name}'s #{versus[0].hand.name}."
+      puts "#{versus[1].name} is eliminated!".rjust(60)
+
+      players_left.delete(versus[1])
     end
 
     winner = players.select { |player| !player.folded }[0]
