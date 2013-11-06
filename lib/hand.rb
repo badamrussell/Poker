@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require_relative 'card'
 
 class Hand
   class InvalidCardIndex < ArgumentError
@@ -56,21 +57,17 @@ class Hand
 
   def select_cards
     begin
-      puts "\n"
-      puts show
-      puts "    1       2       3       4       5 "
-      puts "\n"
-
+      puts "\n" + show + "  #{name}"
+      puts "    1       2       3       4       5 \n\n"
       print "Type in the cards you want to discard or 's' to skip:  "
       str_input = gets.downcase.chomp.split(",")
 
       str_input = [] if str_input[0] == "s"
 
-      selected_cards = []
-      str_input.each do |num|
+      selected_cards = str_input.map do |num|
         index = Integer(num) - 1
         raise InvalidCardIndex if index > 4
-        selected_cards << cards[index]
+        cards[index]
       end
 
       selected_cards
@@ -123,7 +120,8 @@ class Hand
 
     #VALUE FOR THE SET
     total = (SETS.length - SETS.index(name)) * 100
-    #FINE-TUNE VALUE FOR TIE BREAKERS
+
+    #ADD FINER VALUE FOR TIE BREAKERS
     total += (x_10 * 10) + (x_100 * 100) + high_card.value
 
     #puts "#{name}: #{total}"
