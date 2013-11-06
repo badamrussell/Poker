@@ -48,7 +48,7 @@ class Player
     end
   end
 
-  def make_bet
+  def get_bet
     print "How much would you like to raise? (min $#{self.call_bet}) >"
     new_bet = gets.chomp.to_i.abs
 
@@ -62,4 +62,23 @@ class Player
 
     new_bet
   end
+
+  def make_bet
+    raise_amount = 0
+    while raise_amount == 0
+      case player.turn_action
+      when :fold
+        puts " #{player.name} folds!"
+        folded = true
+        break
+      when :call
+        raise_amount = call_bet
+      else
+        raise_amount = player.get_bet
+      end
+    end
+
+    raise_amount
+  end
+
 end

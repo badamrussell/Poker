@@ -88,20 +88,7 @@ class Game
         puts "call: $#{player.call_bet}".rjust(60)
         player.hand.show
 
-        raise_amount = 0
-        while raise_amount == 0
-          case player.turn_action
-          when :fold
-            puts " #{player.name} folds!"
-            player.folded = true
-            break
-          when :call
-            raise_amount = player.call_bet
-            break
-          else
-            raise_amount = player.make_bet
-          end
-        end
+        raise_amount = player.make_bet
 
         if raise_amount > 0
           call_amount = player.call_bet
@@ -115,8 +102,6 @@ class Game
           puts "#{player.name} calls $#{call_amount}".rjust(60) if call_amount > 0
           puts "#{player.name} raises $#{raise_amount}".rjust(60) if raise_amount > 0
         end
-
-
 
         return if players_remaining == 1
         return if finished_betting? && round_counter > 1 && player.call_bet == 0
@@ -164,29 +149,21 @@ class Game
       players_left.delete(versus[1])
     end
 
-    winner = players.select { |player| !player.folded }[0]
-    puts " #{winner.name} wins the $#{pot} pot!".rjust(60)
-    winner.hand.show
+    puts " #{players_left[0].name} wins the $#{pot} pot!".rjust(60)
+    players_left[0].hand.show
 
-    winner
+    nil
   end
 
 
   def play
-    #collects a pot from each player
-    #deals a hand to each player
-
     self.pot = 0
     self.deck.shuffle
 
     start_round
-
     betting_round
-
     draw_phase if players_remaining > 1
-
     betting_round if players_remaining > 1
-
     showdown
   end
 
