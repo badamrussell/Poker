@@ -93,57 +93,29 @@ class Hand
 
   protected
 
-  def find_kind_value(kinds_set, match_value, hi = true)
-    matches = []
-    kinds_set.each do |card_value, match_count|
-      matches << card_value if match_count == match_value
-    end
-
-    return matches[0] if matches.count == 1
-
-    if hi
-      matches[0] > matches[1] ? matches[0] : matches[1]
-    else
-      matches[0] < matches[1] ? matches[0] : matches[1]
-    end
-  end
-
   def score
     x_10 = 0
     x_100 = 0
 
     case name
-    when :r_flush
+    when :r_flush, :s_flush, :flush, :straight
       x_10 = high_card.value
-    when :s_flush
-      x_10 = high_card.value
-    when :four_kind
-      x_10 = find_kind_value(find_kinds,4)
+    when :four_kind, :three_kind, :two_pair, :one_pair
+      card_values = find_kinds.keys.sort
+      x_10 = card_values.first
+      x_100 = card_values.last if card_values.length > 1
     when :full_house
-      kinds = find_kinds
-      x_10 = find_kind_value(kinds,2)
-      x_100 = find_kind_value(kinds,3)
-    when :flush
-      x_10 = high_card.value
-    when :straight
-      x_10 = high_card.value
-    when :three_kind
-      x_10 = find_kind_value(find_kinds,3)
-    when :two_pair
-      kinds = find_kinds
-      x_10 = find_kind_value(kinds,2,false)
-      x_100 = find_kind_value(kinds,2,true)
-    when :one_pair
-      x_10 = find_kind_value(find_kinds,2)
-    else
-      0
+      kinds = find_kinds.sort_by { |value, count| count }
+      x_10 = kinds.first[0]
+      x_100 = kinds.last[0]
     end
 
+    #VALUE FOR THE SET
     total = (SETS.length - SETS.index(name)) * 100
+    #FINE-TUNE VALUE FOR TIE BREAKERS
     total += (x_10 * 10) + (x_100 * 100) + high_card.value
 
     #puts "#{name}: #{total}"
-
     total
   end
 
