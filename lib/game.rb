@@ -64,22 +64,20 @@ class Game
     puts "\n"
   end
 
-  def continue_betting?
-    players.inject(0) { |sum, player| sum + player.call_bet } > 0
+  def finished_betting?
+    players.inject(0) { |sum, player| sum + player.call_bet } == 0
   end
 
   def betting_round(ante_up = false)
-    puts "\n"
-    puts "-$- Place your bets!"
+    puts "\n\n-$- Place your bets!"
     round_counter = 0
 
     players.each do |player|
       player.call_bet = 0
     end
 
-#BUG > ROUND SHOULD STOP IMMEDIATELY STOP WHEN ALL PLAYERS HAVE BET EQUAL
     # ROUND MUST CONTINUE UNTIL ALL PLAYERS HAVE BET EQUAL AMOUNTS
-    while continue_betting? || round_counter == 0
+    loop do
       round_counter += 1
       puts "BETTING ROUND: #{round_counter}".rjust(60)
 
@@ -119,9 +117,12 @@ class Game
           puts "#{player.name} raises $#{raise_amount}".rjust(60) if raise_amount > 0
         end
 
-        player.call_bet = 0
+
 
         return if players_remaining == 1
+        return if finished_betting? && round_counter > 1 && player.call_bet == 0
+
+        player.call_bet = 0
       end
     end
   end
