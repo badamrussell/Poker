@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 class Hand
+  class InvalidCardIndex < ArgumentError
+  end
 
   SETS = [:r_flush,
           :s_flush,
@@ -53,23 +55,32 @@ class Hand
   end
 
   def select_cards
-    puts "\n"
-    puts show
-    puts "    1       2       3       4       5 "
-    puts "\n"
+    begin
+      puts "\n"
+      puts show
+      puts "    1       2       3       4       5 "
+      puts "\n"
 
-    print "Type in the cards you want to discard or 's' to skip:  "
-    str_input = gets.downcase.chomp.split(",")
+      print "Type in the cards you want to discard or 's' to skip:  "
+      str_input = gets.downcase.chomp.split(",")
 
-    str_input = [] if str_input[0] == "s"
+      str_input = [] if str_input[0] == "s"
 
-    selected_cards = []
-    str_input.each do |num|
-      index = num.to_i - 1
-      selected_cards << cards[index]
+      selected_cards = []
+      str_input.each do |num|
+        index = Integer(num) - 1
+        raise InvalidCardIndex if index > 4
+        selected_cards << cards[index]
+      end
+
+      selected_cards
+    rescue InvalidCardIndex
+      puts "All of your choices must be less than 5!"
+      retry
+    rescue ArgumentError
+      puts "You must type in numbers like 1,2,3"
+      retry
     end
-
-    selected_cards
   end
 
   def discard(discard_cards)
