@@ -3,6 +3,9 @@ Poker
 
 A console rendition of Poker.
 
+
+<img style="float: right" src="cover.png">
+
 ##Features
 
 +calculates best value for card hand
