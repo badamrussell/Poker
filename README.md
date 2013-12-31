@@ -1,6 +1,6 @@
 Poker
 =====
-Ruby, TDD, RSpec, Terminal
+###Ruby, TDD, RSpec, Terminal
 
 Poker developed for the Terminal using Ruby and TDD. 
 
