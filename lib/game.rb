@@ -175,10 +175,10 @@ end
 def test_game
   game = Game.new
 
-  granger = Player.new("Granger", 100, "♞")
-  kiran = Player.new("Kiran", 100, "☕")
-  brian = Player.new("Brian", 100, "☠")
-  tim = Player.new("Tim", 100)
+  granger = Player.new("Bert", 100, "♞")
+  kiran = Player.new("Oscar", 100, "☕")
+  brian = Player.new("Rowlf", 100, "☠")
+  tim = Player.new("Gonzo", 100)
 
   game.add_player(granger)
   game.add_player(kiran)

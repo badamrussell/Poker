@@ -66,15 +66,15 @@ class Player
   def make_bet
     raise_amount = 0
     while raise_amount == 0
-      case player.turn_action
+      case self.turn_action
       when :fold
-        puts " #{player.name} folds!"
+        puts " #{self.name} folds!"
         folded = true
         break
       when :call
         raise_amount = call_bet
       else
-        raise_amount = player.get_bet
+        raise_amount = self.get_bet
       end
     end
 
