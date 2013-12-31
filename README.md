@@ -4,7 +4,7 @@ Poker
 A console rendition of Poker.
 
 
-<img style="float: right; border: 1px solid #ccc" src="cover.png">
+<img style="float: right, border: 1px solid #ccc" src="cover.png">
 
 ##Features
 
